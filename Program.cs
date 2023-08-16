@@ -15,18 +15,19 @@ static void Main(string[] args)
 
     rootCommand.Handler = CommandHandler.Create<string>((note) =>
     {
-        Console.WriteLine("Your note was: " + note);
-        Note newNote = new Note(note);
         List<Note> notes;
+        int highestId = 0;
         if (File.Exists("notes.json"))
         {
             string json = File.ReadAllText("notes.json");
             notes = JsonConvert.DeserializeObject<List<Note>>(json);
+            highestId = notes.Max(n => n.Id);
         }
         else
         {
             notes = new List<Note>();
         }
+        Note newNote = new Note(highestId + 1, note);
         notes.Add(newNote);
         string newJson = JsonConvert.SerializeObject(notes);
         File.WriteAllText("notes.json", newJson);
@@ -42,7 +43,7 @@ static void Main(string[] args)
             notes.Sort((x, y) => DateTime.Compare(x.Timestamp, y.Timestamp));
             foreach (var note in notes)
             {
-                Console.WriteLine($"{note.Timestamp:G}: {note.Text}\n");
+                Console.WriteLine($"{note.Id}: {note.Timestamp:G}: {note.Text}\n");
             }
         }
         else
