@@ -1,5 +1,7 @@
 using System.CommandLine;
 using System.CommandLine.Invocation;
+using Newtonsoft.Json;
+using System.IO;
 
 // See https://aka.ms/new-console-template for more information
 static void Main(string[] args)
@@ -14,6 +16,9 @@ static void Main(string[] args)
     rootCommand.Handler = CommandHandler.Create<string>((note) =>
     {
         Console.WriteLine("Your note was: " + note);
+        Note newNote = new Note(note);
+        string json = JsonConvert.SerializeObject(newNote);
+        File.WriteAllText($"{newNote.Id}.json", json);
     });
 
     rootCommand.InvokeAsync(args).Wait();
