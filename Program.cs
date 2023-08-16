@@ -17,25 +17,37 @@ static void Main(string[] args)
     {
         Console.WriteLine("Your note was: " + note);
         Note newNote = new Note(note);
-        string json = JsonConvert.SerializeObject(newNote);
-        File.WriteAllText($"{newNote.Id}.json", json);
+        List<Note> notes;
+        if (File.Exists("notes.json"))
+        {
+            string json = File.ReadAllText("notes.json");
+            notes = JsonConvert.DeserializeObject<List<Note>>(json);
+        }
+        else
+        {
+            notes = new List<Note>();
+        }
+        notes.Add(newNote);
+        string newJson = JsonConvert.SerializeObject(notes);
+        File.WriteAllText("notes.json", newJson);
     });
 
     var printCommand = new Command("print");
     printCommand.Handler = CommandHandler.Create(() =>
     {
-        var files = Directory.GetFiles(Directory.GetCurrentDirectory(), "*.json");
-        var notes = new List<Note>();
-        foreach (var file in files)
+        if (File.Exists("notes.json"))
         {
-            var json = File.ReadAllText(file);
-            var note = JsonConvert.DeserializeObject<Note>(json);
-            notes.Add(note);
+            string json = File.ReadAllText("notes.json");
+            var notes = JsonConvert.DeserializeObject<List<Note>>(json);
+            notes.Sort((x, y) => DateTime.Compare(x.Timestamp, y.Timestamp));
+            foreach (var note in notes)
+            {
+                Console.WriteLine($"{note.Timestamp:G}: {note.Text}\n");
+            }
         }
-        notes.Sort((x, y) => DateTime.Compare(x.Timestamp, y.Timestamp));
-        foreach (var note in notes)
+        else
         {
-            Console.WriteLine($"{note.Timestamp:G}: {note.Text}\n");
+            Console.WriteLine("No notes found.");
         }
     });
     rootCommand.Add(printCommand);
