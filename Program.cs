@@ -16,12 +16,18 @@ static void Main(string[] args)
     rootCommand.Handler = CommandHandler.Create<string>((note) =>
     {
         Console.WriteLine("Your note was: " + note);
-        Note newNote = new Note(note);
+        int lastId = int.Parse(File.ReadAllText("id.txt"));
+        Note newNote = new Note(lastId + 1, note);
+        File.WriteAllText("id.txt", (lastId + 1).ToString());
         List<Note> notes;
         if (File.Exists("notes.json"))
         {
             string json = File.ReadAllText("notes.json");
             notes = JsonConvert.DeserializeObject<List<Note>>(json);
+            foreach (var note in notes)
+            {
+                note.Id = int.Parse(note.Id.ToString());
+            }
         }
         else
         {
