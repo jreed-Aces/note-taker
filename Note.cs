@@ -2,13 +2,13 @@ using System;
 
 public class Note
 {
-    public Guid Id { get; private set; }
+    public int Id { get; private set; }
     public string Text { get; private set; }
     public DateTime Timestamp { get; private set; }
 
-    public Note(string text)
+    public Note(int id, string text)
     {
-        Id = Guid.NewGuid();
+        Id = id;
         Text = text;
         Timestamp = DateTime.Now;
     }
