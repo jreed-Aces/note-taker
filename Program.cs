@@ -52,5 +52,56 @@ static void Main(string[] args)
         }
     });
     rootCommand.Add(printCommand);
+    var updateStatusCommand = new Command("updateStatus")
+    {
+        new Argument<int>("id"),
+        new Argument<string>("status")
+    };
+    updateStatusCommand.Handler = CommandHandler.Create<int, string>((id, status) =>
+    {
+        if (File.Exists("notes.json"))
+        {
+            string json = File.ReadAllText("notes.json");
+            var notes = JsonConvert.DeserializeObject<List<Note>>(json);
+            var note = notes.Find(n => n.Id == id);
+            if (note != null)
+            {
+                note.Status = status;
+                string newJson = JsonConvert.SerializeObject(notes);
+                File.WriteAllText("notes.json", newJson);
+            }
+        }
+    });
+    rootCommand.Add(updateStatusCommand);
+    
+    var printCommand = new Command("print")
+    {
+        new Option<bool>(
+            "--all",
+            getDefaultValue: () => false)
+    };
+    printCommand.Handler = CommandHandler.Create<bool>((all) =>
+    {
+        if (File.Exists("notes.json"))
+        {
+            string json = File.ReadAllText("notes.json");
+            var notes = JsonConvert.DeserializeObject<List<Note>>(json);
+            if (!all)
+            {
+                notes = notes.Where(n => n.Status == "Open").ToList();
+            }
+            notes.Sort((x, y) => DateTime.Compare(x.Timestamp, y.Timestamp));
+            foreach (var note in notes)
+            {
+                Console.WriteLine($"{note.Id}: {note.Timestamp:G}: {note.Text}\n");
+            }
+        }
+        else
+        {
+            Console.WriteLine("No notes found.");
+        }
+    });
+    rootCommand.Add(printCommand);
+    
     rootCommand.InvokeAsync(args).Wait();
 }
