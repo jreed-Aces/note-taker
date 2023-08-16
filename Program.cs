@@ -21,5 +21,23 @@ static void Main(string[] args)
         File.WriteAllText($"{newNote.Id}.json", json);
     });
 
+    var printCommand = new Command("print");
+    printCommand.Handler = CommandHandler.Create(() =>
+    {
+        var files = Directory.GetFiles(Directory.GetCurrentDirectory(), "*.json");
+        var notes = new List<Note>();
+        foreach (var file in files)
+        {
+            var json = File.ReadAllText(file);
+            var note = JsonConvert.DeserializeObject<Note>(json);
+            notes.Add(note);
+        }
+        notes.Sort((x, y) => DateTime.Compare(x.Timestamp, y.Timestamp));
+        foreach (var note in notes)
+        {
+            Console.WriteLine($"{note.Timestamp:G}: {note.Text}\n");
+        }
+    });
+    rootCommand.Add(printCommand);
     rootCommand.InvokeAsync(args).Wait();
 }
