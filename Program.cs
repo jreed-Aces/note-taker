@@ -23,6 +23,14 @@ static int Main(string[] args)
     using note_taker.Services;
     using Microsoft.Extensions.DependencyInjection;
     
+    using System.CommandLine;
+    using System.CommandLine.Invocation;
+    using System.CommandLine.NamingConventionBinder;
+    using Newtonsoft.Json;
+    using System.IO;
+    using note_taker.Services;
+    using Microsoft.Extensions.DependencyInjection;
+    
     class Program
     {
         static int Main(string[] args)
