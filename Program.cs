@@ -37,6 +37,18 @@ static int Main(string[] args)
                 noteService.UpdateStatus(id, Enum.Parse<Status>(status, true));
             });
     
+            var addCommand = new Command("add", "Add Note");
+            addCommand.Add(new Argument<string>
+            (
+                name: "note",
+                description: "Text of note",
+                getDefaultValue: () => "No note supplied"
+            ));
+            addCommand.Handler = CommandHandler.Create<string>((note)=> 
+            {
+                noteService.AddNote(note);
+            });
+
             var printCommand = new Command("print", "Print all notes");
             printCommand.Add(new Option<bool>("--all", "Print all notes"));
             printCommand.Handler = CommandHandler.Create<bool>((all) =>
@@ -47,11 +59,12 @@ static int Main(string[] args)
                     Console.WriteLine($"{note.Id}: {note.Timestamp:G}: {note.Text} ({note.NoteStatus})\n");
                 }
             });
-    
+
             rootCommand.Add(addCommand);
             rootCommand.Add(printCommand);
             rootCommand.Add(statusCommand);
-    
+
             return rootCommand.InvokeAsync(args).Result;
         }
     }
+}
