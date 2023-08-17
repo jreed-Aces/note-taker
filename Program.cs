@@ -2,10 +2,19 @@ using System.CommandLine;
 using System.CommandLine.Invocation;
 using Newtonsoft.Json;
 using System.IO;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using note_taker.Services;
 
 // See https://aka.ms/new-console-template for more information
 static void Main(string[] args)
 {
+    var host = Host.CreateDefaultBuilder()
+        .ConfigureServices((_, services) =>
+            services.AddSingleton<INoteService, NoteService>())
+        .Build();
+
+    var noteService = host.Services.GetRequiredService<INoteService>();
     var rootCommand = new RootCommand
     {
         new Option<string>(
@@ -15,32 +24,15 @@ static void Main(string[] args)
 
     rootCommand.Handler = CommandHandler.Create<string>((note) =>
     {
-        List<Note> notes;
-        int highestId = 0;
-        if (File.Exists("notes.json"))
-        {
-            string json = File.ReadAllText("notes.json");
-            notes = JsonConvert.DeserializeObject<List<Note>>(json);
-            highestId = notes.Max(n => n.Id);
-        }
-        else
-        {
-            notes = new List<Note>();
-        }
-        Note newNote = new Note(highestId + 1, note);
-        notes.Add(newNote);
-        string newJson = JsonConvert.SerializeObject(notes);
-        File.WriteAllText("notes.json", newJson);
+        noteService.AddNote(note);
     });
 
     var printCommand = new Command("print");
     printCommand.Handler = CommandHandler.Create(() =>
     {
-        if (File.Exists("notes.json"))
+        var notes = noteService.GetNotes();
+        if (notes.Count > 0)
         {
-            string json = File.ReadAllText("notes.json");
-            var notes = JsonConvert.DeserializeObject<List<Note>>(json);
-            notes.Sort((x, y) => DateTime.Compare(x.Timestamp, y.Timestamp));
             foreach (var note in notes)
             {
                 Console.WriteLine($"{note.Id}: {note.Timestamp:G}: {note.Text}\n");
