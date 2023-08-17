@@ -1,22 +1,28 @@
 using System.CommandLine;
 using System.CommandLine.Invocation;
+using System.CommandLine.NamingConventionBinder;
 using Newtonsoft.Json;
 using System.IO;
 
 // See https://aka.ms/new-console-template for more information
-static void Main(string[] args)
+class Program
 {
-    var rootCommand = new RootCommand
-    {
-        new Option<string>(
-            "--note",
-            getDefaultValue: () => "No note provided")
-    };
+static int Main(string[] args)
+{
 
-    rootCommand.Handler = CommandHandler.Create<string>((note) =>
+    var rootCommand = new RootCommand();
+    var addCommand = new Command("add", "Add Note");
+    addCommand.Add(new Argument<string>
+    (
+        name: "note",
+        description: "Text of note",
+        getDefaultValue: () => "No note supplied"
+    ));
+    addCommand.Handler = CommandHandler.Create<string>((note)=> 
     {
         List<Note> notes;
         int highestId = 0;
+        var path = Directory.GetCurrentDirectory();
         if (File.Exists("notes.json"))
         {
             string json = File.ReadAllText("notes.json");
@@ -33,7 +39,7 @@ static void Main(string[] args)
         File.WriteAllText("notes.json", newJson);
     });
 
-    var printCommand = new Command("print");
+    var printCommand = new Command("print", "Print all notes");
     printCommand.Handler = CommandHandler.Create(() =>
     {
         if (File.Exists("notes.json"))
@@ -51,6 +57,10 @@ static void Main(string[] args)
             Console.WriteLine("No notes found.");
         }
     });
+
+    rootCommand.Add(addCommand);
     rootCommand.Add(printCommand);
-    rootCommand.InvokeAsync(args).Wait();
+
+    return rootCommand.InvokeAsync(args).Result;
+}
 }
