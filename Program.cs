@@ -15,33 +15,43 @@ static int Main(string[] args)
     services.AddSingleton<INoteService, NoteService>();
     var serviceProvider = services.BuildServiceProvider();
 
-    var rootCommand = new RootCommand();
-    var addCommand = new Command("add", "Add Note");
-    addCommand.Add(new Argument<string>
-    (
-        name: "note",
-        description: "Text of note",
-        getDefaultValue: () => "No note supplied"
-    ));
-    var noteService = serviceProvider.GetService<INoteService>();
-    addCommand.Handler = CommandHandler.Create<string>((note)=> 
+    using System.CommandLine;
+    using System.CommandLine.Invocation;
+    using System.CommandLine.NamingConventionBinder;
+    using Newtonsoft.Json;
+    using System.IO;
+    using note_taker.Services;
+    using Microsoft.Extensions.DependencyInjection;
+    
+    class Program
     {
-        noteService.AddNote(note);
-    });
-
-    var printCommand = new Command("print", "Print all notes");
-    printCommand.Handler = CommandHandler.Create(() =>
-    {
-        var notes = noteService.PrintNotes();
-        foreach (var note in notes)
+        static int Main(string[] args)
         {
-            Console.WriteLine($"{note.Id}: {note.Timestamp:G}: {note.Text}\n");
+            // existing code...
+    
+            var statusCommand = new Command("status", "Update note status");
+            statusCommand.Add(new Argument<int>("id", "Note id"));
+            statusCommand.Add(new Argument<string>("status", "New status"));
+            statusCommand.Handler = CommandHandler.Create<int, string>((id, status) =>
+            {
+                noteService.UpdateStatus(id, Enum.Parse<Status>(status, true));
+            });
+    
+            var printCommand = new Command("print", "Print all notes");
+            printCommand.Add(new Option<bool>("--all", "Print all notes"));
+            printCommand.Handler = CommandHandler.Create<bool>((all) =>
+            {
+                var notes = noteService.PrintNotes(all);
+                foreach (var note in notes)
+                {
+                    Console.WriteLine($"{note.Id}: {note.Timestamp:G}: {note.Text} ({note.NoteStatus})\n");
+                }
+            });
+    
+            rootCommand.Add(addCommand);
+            rootCommand.Add(printCommand);
+            rootCommand.Add(statusCommand);
+    
+            return rootCommand.InvokeAsync(args).Result;
         }
-    });
-
-    rootCommand.Add(addCommand);
-    rootCommand.Add(printCommand);
-
-    return rootCommand.InvokeAsync(args).Result;
-}
-}
+    }
