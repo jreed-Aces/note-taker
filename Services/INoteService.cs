@@ -5,7 +5,8 @@ namespace note_taker.Services
     public interface INoteService
     {
         bool AddNote(string note);
-        List<Note> PrintNotes();
+        bool UpdateStatus(int id, Status status);
+        List<Note> PrintNotes(bool all);
     }
 }
 
