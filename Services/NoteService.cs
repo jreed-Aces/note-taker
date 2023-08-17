@@ -7,7 +7,7 @@ namespace note_taker.Services
 {
     public class NoteService : INoteService
     {
-        public bool AddNote(int id, string note)
+        public bool AddNote(string note)
         {
             List<Note> notes;
             var path = Directory.GetCurrentDirectory();
@@ -20,7 +20,8 @@ namespace note_taker.Services
             {
                 notes = new List<Note>();
             }
-            Note newNote = new Note(id, note);
+            int highestId = notes.Count > 0 ? notes.Max(n => n.Id) : 0;
+            Note newNote = new Note(highestId + 1, note);
             notes.Add(newNote);
             string newJson = JsonConvert.SerializeObject(notes);
             File.WriteAllText("notes.json", newJson);
