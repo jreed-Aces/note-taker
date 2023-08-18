@@ -14,6 +14,24 @@ namespace note_taker.Tests
             _fileService = A.Fake<IFileService>();
             _noteService = new NoteService(_fileService);
         }
+
+        [Fact]
+        public void TestAddNote()
+        {
+            // Add test code for AddNote method
+        }
+
+        [Fact]
+        public void TestPrintNotes()
+        {
+            // Add test code for PrintNotes method
+        }
+
+        [Fact]
+        public void TestUpdateNoteStatus()
+        {
+            // Add test code for UpdateNoteStatus method
+        }
     }
 }
 
