@@ -11,7 +11,7 @@ public class Note
     public int Id { get; private set; }
     public string Text { get; private set; }
     public DateTime Timestamp { get; private set; }
-    public Status NoteStatus { get; private set; }
+    public Status NoteStatus { get; set; }
 
     public Note(int id, string text)
     {
