@@ -1,14 +1,11 @@
 # note-taker
 
-The note-taker is a simple console application for taking and storing notes. It provides a set of commands for adding and viewing notes.
+The note-taker is a console application for taking and storing notes. It provides a set of commands for adding, viewing, and updating notes.
 
 ## Commands
 
 The following commands are available:
 
-* `--note`: This command is used to add a new note. Example usage: `--note "This is a new note"`
-* `print`: This command is used to print all the notes. Example usage: `print`
-
-## Commit Messages
-
-All commit messages should include the issue number in the format "<message> #<issue number>".
+* `add`: This command is used to add a new note. Example usage: `add "This is a new note"`
+* `print`: This command is used to print all notes or only open notes based on the '--all' option. Example usage: `print --all`
+* `update`: This command is used to update the status of a note. Example usage: `update 1 Completed`
