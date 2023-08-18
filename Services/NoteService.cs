@@ -7,6 +7,12 @@ namespace note_taker.Services
 {
     public class NoteService : INoteService
     {
+        private readonly IFileService _fileService;
+        public NoteService(IFileService fileService)
+        {
+            _fileService = fileService;
+        }
+        
         public bool AddNote(string note)
         {
             List<Note> notes;
