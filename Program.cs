@@ -13,6 +13,7 @@ static int Main(string[] args)
 {
     var services = new ServiceCollection();
     services.AddSingleton<INoteService, NoteService>();
+    services.AddSingleton<IFileService, FileService>();
     var serviceProvider = services.BuildServiceProvider();
 
     var rootCommand = new RootCommand();
