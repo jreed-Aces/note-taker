@@ -19,7 +19,7 @@ namespace note_taker.Services
             var path = Directory.GetCurrentDirectory();
             if (File.Exists("notes.json"))
             {
-                string json = File.ReadAllText("notes.json");
+                string json = _fileService.ReadAllText("notes.json");
                 notes = JsonConvert.DeserializeObject<List<Note>>(json);
             }
             else
@@ -30,16 +30,16 @@ namespace note_taker.Services
             Note newNote = new Note(highestId + 1, note);
             notes.Add(newNote);
             string newJson = JsonConvert.SerializeObject(notes);
-            File.WriteAllText("notes.json", newJson);
+            _fileService.WriteAllText("notes.json", newJson);
             return true;
         }
 
         public List<Note> PrintNotes(bool all = false)
         {
             List<Note> notes = new List<Note>();
-            if (File.Exists("notes.json"))
+            if (_fileService.Exists("notes.json"))
             {
-                string json = File.ReadAllText("notes.json");
+                string json = _fileService.ReadAllText("notes.json");
                 notes = JsonConvert.DeserializeObject<List<Note>>(json);
                 if (!all)
                 {
@@ -53,9 +53,9 @@ namespace note_taker.Services
         public bool UpdateNoteStatus(int id, Note.Status status)
         {
             List<Note> notes;
-            if (File.Exists("notes.json"))
+            if (_fileService.Exists("notes.json"))
             {
-                string json = File.ReadAllText("notes.json");
+                string json = _fileService.ReadAllText("notes.json");
                 notes = JsonConvert.DeserializeObject<List<Note>>(json);
             }
             else
@@ -69,7 +69,7 @@ namespace note_taker.Services
             }
             noteToUpdate.NoteStatus = status;
             string newJson = JsonConvert.SerializeObject(notes);
-            File.WriteAllText("notes.json", newJson);
+            _fileService.WriteAllText("notes.json", newJson);
             return true;
         }
     }
