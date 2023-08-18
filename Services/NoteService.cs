@@ -28,16 +28,43 @@ namespace note_taker.Services
             return true;
         }
 
-        public List<Note> PrintNotes()
+        public List<Note> PrintNotes(bool all = false)
         {
             List<Note> notes = new List<Note>();
             if (File.Exists("notes.json"))
             {
                 string json = File.ReadAllText("notes.json");
                 notes = JsonConvert.DeserializeObject<List<Note>>(json);
+                if (!all)
+                {
+                    notes = notes.Where(n => n.NoteStatus == Note.Status.Open).ToList();
+                }
                 notes.Sort((x, y) => DateTime.Compare(x.Timestamp, y.Timestamp));
             }
             return notes;
+        }
+
+        public bool UpdateNoteStatus(int id, Note.Status status)
+        {
+            List<Note> notes;
+            if (File.Exists("notes.json"))
+            {
+                string json = File.ReadAllText("notes.json");
+                notes = JsonConvert.DeserializeObject<List<Note>>(json);
+            }
+            else
+            {
+                return false;
+            }
+            Note noteToUpdate = notes.Find(n => n.Id == id);
+            if (noteToUpdate == null)
+            {
+                return false;
+            }
+            noteToUpdate.NoteStatus = status;
+            string newJson = JsonConvert.SerializeObject(notes);
+            File.WriteAllText("notes.json", newJson);
+            return true;
         }
     }
 }

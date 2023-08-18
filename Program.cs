@@ -30,9 +30,10 @@ static int Main(string[] args)
     });
 
     var printCommand = new Command("print", "Print all notes");
-    printCommand.Handler = CommandHandler.Create(() =>
+    printCommand.Add(new Option<bool>("--all", getDefaultValue: () => false));
+    printCommand.Handler = CommandHandler.Create<bool>((all) =>
     {
-        var notes = noteService.PrintNotes();
+        var notes = noteService.PrintNotes(all);
         foreach (var note in notes)
         {
             Console.WriteLine($"{note.Id}: {note.Timestamp:G}: {note.Text}\n");
@@ -40,7 +41,16 @@ static int Main(string[] args)
     });
 
     rootCommand.Add(addCommand);
+    var updateCommand = new Command("update", "Update note status");
+    updateCommand.Add(new Argument<int>("id"));
+    updateCommand.Add(new Argument<Note.Status>("status"));
+    updateCommand.Handler = CommandHandler.Create<int, Note.Status>((id, status) =>
+    {
+        noteService.UpdateNoteStatus(id, status);
+    });
+
     rootCommand.Add(printCommand);
+    rootCommand.Add(updateCommand);
 
     return rootCommand.InvokeAsync(args).Result;
 }
