@@ -43,6 +43,29 @@ namespace note_taker.Services
             }
             return notes;
         }
+
+        public bool UpdateNoteStatus(int id, Note.Status status)
+        {
+            List<Note> notes;
+            if (File.Exists("notes.json"))
+            {
+                string json = File.ReadAllText("notes.json");
+                notes = JsonConvert.DeserializeObject<List<Note>>(json);
+            }
+            else
+            {
+                return false;
+            }
+            Note noteToUpdate = notes.Find(n => n.Id == id);
+            if (noteToUpdate == null)
+            {
+                return false;
+            }
+            noteToUpdate.NoteStatus = status;
+            string newJson = JsonConvert.SerializeObject(notes);
+            File.WriteAllText("notes.json", newJson);
+            return true;
+        }
     }
 }
 
