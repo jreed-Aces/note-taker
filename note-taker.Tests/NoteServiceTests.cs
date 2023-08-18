@@ -22,6 +22,9 @@ namespace note_taker.Tests
             // Arrange
             string note = "Test note";
 
+            // Add the following line before the // Act comment
+            A.CallTo(() => _fileService.SomeMethod()).Returns(someValue);
+
             // Act
             bool result = _noteService.AddNote(note);
 
@@ -34,6 +37,9 @@ namespace note_taker.Tests
         {
             // Arrange
             List<Note> expectedNotes = new List<Note>();
+
+            // Add the following line before the // Act comment
+            A.CallTo(() => _fileService.SomeMethod()).Returns(someValue);
 
             // Act
             List<Note> actualNotes = _noteService.PrintNotes();
@@ -48,6 +54,9 @@ namespace note_taker.Tests
             // Arrange
             int id = 1;
             Note.Status status = Note.Status.Completed;
+
+            // Add the following line before the // Act comment
+            A.CallTo(() => _fileService.SomeMethod()).Returns(someValue);
 
             // Act
             bool result = _noteService.UpdateNoteStatus(id, status);
