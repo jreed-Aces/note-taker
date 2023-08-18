@@ -23,6 +23,7 @@ namespace note_taker.Tests
             string note = "Test note";
 
             // Add the following line before the // Act comment
+            string someValue = "Some value";
             A.CallTo(() => _fileService.SomeMethod()).Returns(someValue);
 
             // Act
@@ -39,6 +40,7 @@ namespace note_taker.Tests
             List<Note> expectedNotes = new List<Note>();
 
             // Add the following line before the // Act comment
+            string someValue = "Some value";
             A.CallTo(() => _fileService.SomeMethod()).Returns(someValue);
 
             // Act
@@ -56,6 +58,7 @@ namespace note_taker.Tests
             Note.Status status = Note.Status.Completed;
 
             // Add the following line before the // Act comment
+            string someValue = "Some value";
             A.CallTo(() => _fileService.SomeMethod()).Returns(someValue);
 
             // Act
