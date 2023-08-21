@@ -17,7 +17,7 @@ namespace note_taker.Services
         {
             List<Note> notes;
             var path = Directory.GetCurrentDirectory();
-            if (File.Exists("notes.json"))
+            if (_fileService.Exists("notes.json"))
             {
                 string json = _fileService.ReadAllText("notes.json");
                 notes = JsonConvert.DeserializeObject<List<Note>>(json);
