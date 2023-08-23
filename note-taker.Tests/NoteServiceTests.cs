@@ -32,9 +32,40 @@ namespace note_taker.Tests
             A.CallTo(() => _fileService.Exists("notes.json")).MustHaveHappenedOnceExactly();
             A.CallTo(() => _fileService.ReadAllText("notes.json")).MustHaveHappenedOnceExactly();
             A.CallTo(() => _fileService.WriteAllText(A<string>.Ignored, A<string>.Ignored)).MustHaveHappenedOnceExactly();
+            Assert.Equal(note, _noteService.PrintNotes().Last().Content);
         }
 
-        // Add more tests for the other methods in the NoteService.cs class
+        [Fact]
+        public void PrintNotes_ShouldReturnCorrectNotes()
+        {
+            // Arrange
+            List<Note> expectedNotes = new List<Note> { new Note(1, "Test note") };
+            A.CallTo(() => _fileService.Exists("notes.json")).Returns(true);
+            A.CallTo(() => _fileService.ReadAllText("notes.json")).Returns(JsonConvert.SerializeObject(expectedNotes));
+        
+            // Act
+            List<Note> actualNotes = _noteService.PrintNotes();
+        
+            // Assert
+            Assert.Equal(expectedNotes, actualNotes);
+        }
+        
+        [Fact]
+        public void UpdateNoteStatus_ShouldUpdateStatusCorrectly()
+        {
+            // Arrange
+            Note expectedNote = new Note(1, "Test note");
+            expectedNote.NoteStatus = Note.Status.Closed;
+            A.CallTo(() => _fileService.Exists("notes.json")).Returns(true);
+            A.CallTo(() => _fileService.ReadAllText("notes.json")).Returns(JsonConvert.SerializeObject(new List<Note> { expectedNote }));
+        
+            // Act
+            bool result = _noteService.UpdateNoteStatus(expectedNote.Id, Note.Status.Closed);
+        
+            // Assert
+            Assert.True(result);
+            Assert.Equal(expectedNote.NoteStatus, _noteService.PrintNotes().Find(n => n.Id == expectedNote.Id).NoteStatus);
+        }
     }
 }
 
